@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# 技术支持：https://www.jianshu.com/u/69f40328d4f0 
+# 技术支持：https://www.jianshu.com/u/69f40328d4f0
 # 技术支持 https://china-testing.github.io/
 # https://github.com/china-testing/python-api-tesing/blob/master/practices/tk2.py
 
@@ -9,16 +9,35 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 from tkinter import Menu
+from enum import Enum
+import crawler
+from app_context import AppCtx
+
+# class pipeline(Enum):
+#     START = 1
+#     CRAWLER = 2
+
+# is_finish = False
+# next_step = pipeline.START
+# def switch(case):
+#     return {
+#         pipeline.START : start,
+#     }.get(case, -1)
+
+# def start:
+
+#instantiate app context object
+app_ctx = AppCtx()
 
 # Create instance
-win = tk.Tk()   
+win = tk.Tk()
 
-# Add a title       
-win.title("知乎话题分析器 by butyuhao")  
+# Add a title
+win.title("知乎话题分析器 by butyuhao")
 
 tabControl = ttk.Notebook(win)          # Create Tab Control
 
-tab1 = ttk.Frame(tabControl)            # Create a tab 
+tab1 = ttk.Frame(tabControl)            # Create a tab
 tabControl.add(tab1, text='Step1')      # Add the tab
 tab2 = ttk.Frame(tabControl)            # Add a second tab
 tabControl.add(tab2, text='Step2')      # Make second tab visible
@@ -34,20 +53,24 @@ a_label = ttk.Label(mighty, text="待分析知乎问题URL：")
 a_label.grid(column=0, row=0, sticky='W')
 
 # Modified Button Click Function
-def _click(): 
+
+def _click():
     split_url = url_entered.get().split('/')
     is_url_valid = False
     for w in split_url:
         if w == 'question':
             is_url_valid = True
             continue
-        if is_url_valid is True:
-            question_id = w
+        if (is_url_valid is True):
+            app_ctx.question_id = w
             break
     if not is_url_valid:
         result_label['text'] = '网址有误，请重新输入。'
     else:
         result_label['text'] = '正在缓存...'
+        crawler.run(app_ctx)
+        result_label['text'] = '缓存完成'
+
     #action.configure(text='正在缓存...', state="disabled")
 # Modify adding a Label using mighty as the parent instead of win
 result_label = ttk.Label(mighty, text="")
@@ -59,14 +82,17 @@ url_entered = ttk.Entry(mighty, width=12, textvariable=name)
 url_entered.grid(column=0, row=1, sticky='W')               # align left/West
 
 # Adding a Button
-action = ttk.Button(mighty, text="缓存", command=_click)   
-action.grid(column=1, row=1)                                
+action = ttk.Button(mighty, text="缓存", command=_click)
+action.grid(column=1, row=1)
 
 # Exit GUI cleanly
+
+
 def _quit():
     win.quit()
     win.destroy()
-    exit() 
+    exit()
+
 
 # Creating a Menu Bar
 menu_bar = Menu(win)
@@ -86,7 +112,7 @@ menu_bar.add_cascade(label="Help", menu=help_menu)
 
 
 url_entered.focus()      # Place cursor into name Entry
-#======================
+# ======================
 # Start GUI
-#======================
+# ======================
 win.mainloop()
