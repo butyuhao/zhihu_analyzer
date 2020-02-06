@@ -43,7 +43,9 @@ tab2 = ttk.Frame(tabControl)            # Add a second tab
 tabControl.add(tab2, text='Step2')      # Make second tab visible
 
 tabControl.pack(expand=2, fill="both")  # Pack to make visible
-
+#=========
+#  TAB1
+#=========
 # LabelFrame using tab1 as the parent
 mighty = ttk.LabelFrame(tab1, text='键入待分析知乎问题URL，并缓存数据。')
 mighty.grid(column=0, row=0, padx=0, pady=4)
