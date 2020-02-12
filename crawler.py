@@ -6,6 +6,7 @@ import re
 import datetime
 import pandas as pd
 import csv
+from tqdm import tqdm
 
 def get_data(url):
     '''
@@ -44,31 +45,35 @@ def parse_data(html):
     try:
         for item in json_data:
  
-            comment = []
-            comment.append(item['author']['name'])    # 姓名
-            comment.append(item['author']['gender'])  # 性别
-            comment.append(item['author']['url'])     # 个人主页
-            comment.append(item['voteup_count'])      # 点赞数
-            comment.append(item['comment_count'])     # 评论数
-            comment.append(item['url'])               # 回答链接
-            comment.append(item['content'])           # 回答内容
+            comment = {}
+            comment['name'] = str(item['author']['name'])    # 姓名
+            comment['gender'] = int(item['author']['gender'])  # 性别
+            comment['personal_url'] = str(item['author']['url'])     # 个人主页
+            comment['vote_up_count'] = int(item['voteup_count'])      # 点赞数
+            comment['comment_count'] = int(item['comment_count'])     # 评论数
+            comment['answer_url'] = str(item['url'])               # 回答链接
+            comment['content'] = str(item['content'])           # 回答内容
             comments.append(comment)
             
         return comments
     
     except Exception as e:
-        print(comment)
+        print('error' + str(comment))
         print(e)
         
 def save_data(comments):
     '''
     功能：将comments中的信息输出到文件中/或数据库中。
     参数：comments 将要保存的数据  
+    每一行是一个回答，每一行各自是json格式
     '''
-    filename = 'data/comments.csv'
-    
-    dataframe = pd.DataFrame(comments)
-    dataframe.to_csv(filename, mode='a', index=False, sep=',', header=False)
+    filename = './data/comments.txt'
+    # filename = 'data/comments.csv'
+    with open(filename, 'a') as f:
+        for c in comments:
+            f.writelines(str(c) + '\n')
+    # dataframe = pd.DataFrame(comments)
+    # dataframe.to_csv(filename, mode='a', index=False, sep=',', header=False)
     #dataframe.to_csv(filename, mode='a', index=False, sep=',', header=['name','gender','user_url','voteup','cmt_count','url'])
     
 def csv_to_json(file_path):
@@ -86,7 +91,7 @@ def csv_to_json(file_path):
     jsonfile.write(out)
 def run(app_ctx):
     
-    
+    app_ctx.is_crawler_finish = False
     # get total cmts number
     html = get_data(app_ctx.url.format(app_ctx.question_id, app_ctx.initial_offset))
     totals = json.loads(html)['paging']['totals']
@@ -94,17 +99,15 @@ def run(app_ctx):
     print(totals)
     print('---'*10)
     
-    page = 0
-    
-    while(page < totals):
+    for page in tqdm(range(0, totals, 5)):
         url = app_ctx.url.format(app_ctx.question_id, page)
         html = get_data(url)
         comments = parse_data(html)
         save_data(comments)
-        print(page)
-        page += 5
+        #print(page)
     #将保存的csv文件转换为json格式
-    csv_to_json('data/comments.csv')
+    #csv_to_json('data/comments.csv')
+    app_ctx.is_crawler_finish = True
 
 if __name__ == '__main__':
 
@@ -116,15 +119,11 @@ if __name__ == '__main__':
     print(totals)
     print('---'*10)
     
-    page = 0
-    
-    while(page < totals):
+
+    for page in tqdm(range(0, totals, 5)):
         
         html = get_data(url.format(page))
         comments = parse_data(html)
         save_data(comments)
-        
-        
-        page += 5
     
-    csv_to_json('data/comments.csv')
+    #csv_to_json('data/comments.csv')

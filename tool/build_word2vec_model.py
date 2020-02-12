@@ -23,7 +23,7 @@ if __name__ == '__main__':
         sys.exit(1)
     inp, outp1, outp2 = sys.argv[1:4]
  
-    model = Word2Vec(LineSentence(inp), size=500, window=5, min_count=5,
+    model = Word2Vec(LineSentence(inp), size=1024, window=5, min_count=5,
                      workers=multiprocessing.cpu_count())
  
     model.save(outp1)
