@@ -1,0 +1,32 @@
+# coding:utf-8
+import re
+##过滤HTML中的标签
+#将HTML中标签等信息去掉
+#@param htmlstr HTML字符串.
+def filter_tags(html_str):
+    re_p=re.compile('<p>',re.I)
+    re_slash_p=re.compile('</p>',re.I)
+    re_span=re.compile('<span.*</span>')
+    re_a=re.compile('<a.*>')
+    re_figure=re.compile('<figure.*</figure>')
+    re_br=re.compile('<br/>')
+    re_img=re.compile('<img.*/>')
+    re_tag=re.compile('</?[a-z]*[0-9]*>')
+    re_p_empty=re.compile('<p class="ztext-empty-paragraph">')
+    s=re_p.sub('',html_str)
+    s=re_slash_p.sub('',s)
+    s=re_span.sub('',s)
+    s=re_a.sub('n',s)
+    s=re_figure.sub('',s)
+    s=re_br.sub('',s)
+    s=re_img.sub('',s)
+    s=re_tag.sub('',s)
+    s=re_p_empty.sub('',s)
+    blank_line=re.compile('n+')
+    s=blank_line.sub('n',s)
+    return s
+
+if __name__ == '__main__':
+    str = '<p>作为刚刚结束大学本科阶段最后一门考试的车辆大四狗来回答一波吧！仅供参考。</p><p>目前我的研究方向是多传感器融合感知和定位，所以关于这个方向的可能说的多一些。</p><p>先上传一张百度Apollo 1.0的全栈工程师的技术图谱吧。</p><figure data-size="normal"><noscript><img src="https://pic1.zhimg.com/50/v2-e59c5609c79b3ca05c0b83fb91bfa311_hd.jpg" data-rawwidth="1080" data-rawheight="1587" data-size="normal" data-caption="" data-default-watermark-src="https://pic2.zhimg.com/50/v2-1247583535d9c6759cd3c9ca383a0dff_hd.jpg" class="origin_image zh-lightbox-thumb" width="1080" data-original="https://pic1.zhimg.com/v2-e59c5609c79b3ca05c0b83fb91bfa311_r.jpg"/></noscript><img src="data:image/svg+xml;utf8,&lt;svg xmlns=&#39;http://www.w3.org/2000/svg&#39; width=&#39;1080&#39; height=&#39;1587&#39;&gt;&lt;/svg&gt;" data-rawwidth="1080" data-rawheight="1587" data-size="normal" data-caption="" data-default-watermark-src="https://pic2.zhimg.com/50/v2-1247583535d9c6759cd3c9ca383a0dff_hd.jpg" class="origin_image zh-lightbox-thumb lazy" width="1080" data-original="https://pic1.zhimg.com/v2-e59c5609c79b3ca05c0b83fb91bfa311_r.jpg" data-actualsrc="https://pic1.zhimg.com/50/v2-e59c5609c79b3ca05c0b83fb91bfa311_hd.jpg"/></figure><p>目前百度的Apollo系统已经更新到5.5版本，且向车路协同也就是V2X靠拢。这和目前国内的发展状况有关，大多数企业已经认识到单车智能实现L4级及以上的无人驾驶短时间内无法实现，现在资本也开始回缩，向封闭园区，矿区和港口码头和Robo Taix等能落地的方向优先发展。</p><p>虽说V2X是个好的发展方向，但是真的实现最起码还要10年，且车辆协同，也就是车联网也离不开单车智能，目前国外的大公司还集中在单车智能，目前Tesla做的很好，虽然出了几次事故，主要是Tesla完全靠视觉来感知和定位的，是目前唯一可以真正装到车上使用并且盈利的公司。Google的Waymo是做无人驾驶元老级的公司了，但是还是主要靠激光雷达感知和定位。</p><p class="ztext-empty-paragraph"><br/></p><p>下面进入正题吧！</p><p>首先是编程语言的学习了，Python，C++，Matlab，C这几门是必须要会的，有空闲是时间可以学学Java,毕竟是排名第一的语言。</p><p>首先，python人工智能的标配语言，可以看看廖雪峰的教程，B站上搜一下很多不错的教程。</p><p>其次，C++，被称为最难的语言，性能是这门语言的关键。可以看看C++ Primer 做入门，后面关于STL、多线程和socket编程等进阶了在说，到时候你自然知道看什么了。</p><p>Matlab学车辆的要会，这个多参加几次数学建大赛就都会了。</p><p>C语言，做嵌入式开发离不开它，单片机（如STM32）有时间可以玩一玩，不要求精通到会画PCB,但是车载网络的基本协议都要掌握，尤其是CAN,其次包括电机控制，各种车载传感器的控制和数据解析等都要会，自己有了想法想实现的时候，这不能成为你的障碍。</p><p class="ztext-empty-paragraph"><br/></p><p>接下来说一些工具类吧！</p><p>首先是ROS系统，作为最流行的机器人操作系统应该熟练掌握，其中很多的思想对你学习其他的系统很有帮助。比如百度的Apollo系统就是从ROS中出来，虽然现在已经换成了他们自己开发的Cyber RT系统，但是ROS订阅和发布的机制仍然保留了，且那个系统从底层进行更改，我们在上层开发，只需要熟悉API就可以很快学会。除此之外ROS系统还有很强大的社区和各种开源的工具像Rviz（数据可视化），Gazebo（物理仿真模型）等工具很好用，关于ROS暂时说这些。</p><p>ROS的资料首推古月居前辈的《ROS机器人开发与实践》，深蓝学院有他的课，你可以看看，还有ROS的官网，要好好看看。</p><p>接下来是Bazel、Cmake、Protobuf等编译工具，这个上官网学习即可，Cmake有一个叫做《Cmake Practice》的小册子写的不错。</p><p>然后是Docker，容器的优点我就不细说了，主要是Apollo的系统是基于Docker的，一定要理解好容器的本质还有镜像和仓库的概念，这样对你理解docker的命令很有帮助。</p><p>接下来是Opencv和PCL了，一个2D视觉一个3D点云，我觉得视觉的发展一定会从2D走向3D，这两个库必须要会。Opencv就不说了，资料太多，自己搜就行，PCL有一本叫做《点云库PCL学习教程》的书，但是感觉就是官网翻译，不想看英语的可以看这个，把书里的代码全部跑一边，并且读懂每行代码的含义就行，以后用到哪一部分在细致学习即可。</p><p class="ztext-empty-paragraph"><br/></p><p>接下来在说一说人工智能的流行框架吧！</p><p>首先是TensorFlow和Keras，这个主要是基于静态图的,  TensorBoard是很好的可视化工具，TensorFlow2.0改进后也可以进行动态图的编程了。TensorFlow主要是工业界在用，所以学习它是不可避免的。TensorFlow学习来还挺简单但是Debug的时候不是那么友好，底层代码晦涩难懂，这个的教程太多了，自己搜B站有很多。</p><p>其次是Pytorch，这个主要基于动态图，主要在学术界使用，但是最近Pytorch发展迅猛，刚刚发布1.2版本，感觉已经追上TensorFlow了。这个学起来简单易用，上手快，代码清晰易懂。</p><p>如果做视觉的话Caffe是个不错的选择，Caffe 中的数据结构是以 Blobs-layers-Net 形式存在的，扩展性好且专精于图像处理。学习起来和前面两个区别挺大，但是毕竟都是框架，都不是很难学。</p><p class="ztext-empty-paragraph"><br/></p><p>前面说的那些你都会了，下面就要学些上档次的了。</p><p>首先数据结构和算法，这个你可以看看《大话数据结构》做为入门，之后上LeetCode上刷题，还有《剑指Offer》可以看看，不仅对你学习算法有好处，还对以后找工作有帮助。然后《操作系统原理》、《计算机网络》、《计算机组成原理》有时间都学一学，这是你和那些培训班出来的学生的区别。</p><p class="ztext-empty-paragraph"><br/></p><p>接下来是关于机器学习和深度学习的原理课程的推荐了。</p><p>首推Coursera上Andrew Wu的深度学习课程，配上课后的编程练习，一遍下来，最起码是个入门水平了，真正明白深度学习中的那些细节和原理。李宏毅的课程也很好，就是台湾腔听着有点不习惯，还有Standford的CS231N，李飞飞的课程，推荐自然没什么说的。书的话，可以看看周志华的《西瓜书》，还有著名的《花书》，以及《强化学习》都是圣经类的书籍了。</p><p class="ztext-empty-paragraph"><br/></p><p>最关键的是数学了，这是一切的基础。</p><p>首先，本科阶段学的高数，线代，概率论都要熟练掌握，不能比考研的同学差，其次要自己学一学离散数学，线性代数要学的更高级，像奇异值分解，三角分解等要会，尤其是把概率论和线性代数结合起来，要看懂。线性代数可能需要你至少学三遍以上，才能逐渐理解它的美。然后是优化理论，像非线性优化和凸优化等，最后还有信息论的东西要学习一下。对了还有现代控制理论的东西必须要会，这是很基础的，也是很重要的。</p><p class="ztext-empty-paragraph"><br/></p><p>最后再来推荐一波SLAM的相关书籍和视频吧！虽然，目前SLAM还不能在无人车上有太大的应用，但是学会了它，可以说，学其他东西都很简单。</p><p>首推，高翔的课程，他的《视觉slam十四讲》，SLAM入门非常好的书籍，还有他的视频课程。接下来推荐高翔翻译的《机器人学中的状态估计》读懂了这门书就在也不怕数学了，还有《概率机器人》让你对各种滤波器有很好的理解，最后要想深入视觉SLAM，《计算机视觉中的多视图几何》这本书是逃不开的，想要成为精英，就要付出代价，可以慢慢啃。还有推荐高翔在深蓝学院的《从零手写VIO》课程，这可能是视觉SLAM真正应用的很好的方向了，多传感器融合的趋势已经不可阻挡了。还有激光SLAM，我看到是曾书格的视频。</p><p>还有Udacity的无人驾驶课程挺好的，要是能自己完成全部项目，相信已经超过70%的人了，我打算这个假期把这个课程看的差不多。</p><p>最后，也来展示一下我们前一阵利用百度Apollo做的无人校园快递车的Demo吧！</p><a class="video-box" href="https://link.zhihu.com/?target=https%3A//www.zhihu.com/video/1198367904612397056" target="_blank" data-video-id="" data-video-playable="" data-name="校园无人驾驶演示" data-poster="https://pic3.zhimg.com/v2-3a64f5ab025b67c5dd4b60e2e5389316.jpg" data-lens-id="1198367904612397056"><img class="thumbnail" src="https://pic3.zhimg.com/v2-3a64f5ab025b67c5dd4b60e2e5389316.jpg"/><span class="content"><span class="title">校园无人驾驶演示<span class="z-ico-extern-gray"></span><span class="z-ico-extern-blue"></span></span><span class="url"><span class="z-ico-video"></span>https://www.zhihu.com/video/1198367904612397056</span></span></a><p>在车辆工程专业想做无人驾驶的小伙伴，这个专业可能成为你的劣势，但是把握好，这可能会变成我们的优势。虽然我一直是为了拿奖学金和保研被迫学了车辆的知识，但是四年下来，我对车的理解真的和大一刚来的时候有了很大区别，真的敢说自己懂点车了。总之，技多不压身，虽然是被迫学习，但是也都挺过来了。也许这就是命，可能当初高考少打20分我就去学计算机了，也许在计算机专业我再也不会接触到车，也许会有更好的选择，但是现在也不后悔，在车辆的这几年我变的更加立体了，学了很多课外的东西，过的也很充实。我从没有被自己的专业限制，本科阶段我们就应该广泛接触，多学自己感兴趣和对未来的发展有帮助的知识，研究生在选一个小的方向继续深入。</p><p>不要被专业限制了自己，觉得自己是车辆工程的学生编程就是不行，数学就是不好。专业只是你的一个小小的标签，除去它，你练就的各种各样的能力才是真正重要的东西，车辆专业的你，代码能力依旧可以很好，数学水平仍然可以练就，要对自己有自信！</p><p>希望我的回答对你有用！！</p><p>加油，希望在无人驾驶的高端领域里可以遇到更多车辆工程的小伙伴！！！</p>'
+    str = filter_tags(str)
+    #print(str)

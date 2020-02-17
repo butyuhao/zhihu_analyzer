@@ -1,7 +1,7 @@
 import json
 from gensim.models import Word2Vec
 from copy import deepcopy
-from tool.fen_ci import cut_words, build_stop_word_table
+from tool.fen_ci import cut_words
 from tqdm import tqdm
 import define
 import numpy as np
@@ -46,13 +46,16 @@ def get_similar_doc(doc_list, n, app_ctx):
     for i, vec in enumerate(app_ctx.doc_vec_list):
         similarity[i] = cosine_similarity(doc_vec_mean, vec)
     similarity = sorted(similarity.items(), key=lambda x : x[1], reverse=True)
-    for i in range(n):
-        print(app_ctx.comments[similarity[i][0]])
+    for i in range(min(n, len(similarity))):
+        app_ctx.recommend_list = []
+        app_ctx.recommend_list.append(similarity[i][0])
     return True
     
 def get_doc_vec_list(app_ctx):
     ''' 
     获得当前app_ctx中comments所对应的vector的list
+    因为在word2vec部分有判断词语是否在model中，这边cut_word
+    的时候不需要传入停用词表
     '''
     doc_vec_list = []
     for comment in tqdm(app_ctx.comments):

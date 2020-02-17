@@ -1,6 +1,13 @@
 import json
-f = open('./data/comments.json')
-comments = f.readlines()
-comments = json.loads(comments[0])
-comments = sorted(comments, key=lambda x : int(x['vote_up_count']), reverse=True)
-print(comments[0:3])
+from test_html_filter import filter_tags
+import sys
+import os
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
+from app_context import AppCtx
+app_ctx = AppCtx()
+app_ctx._load_comments(('./data/comments.txt'))
+for c in app_ctx.comments:
+  str = filter_tags(c['content'])
+  print(str)

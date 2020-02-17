@@ -14,6 +14,8 @@ import crawler
 from app_context import AppCtx
 import os
 import define
+from plot_word_cloud import generate_wordcloud
+from word2vec import get_similar_doc
 
 # class pipeline(Enum):
 #     START = 1
@@ -43,6 +45,10 @@ tab1 = ttk.Frame(tabControl)            # Create a tab
 tabControl.add(tab1, text='Step1')      # Add the tab
 tab2 = ttk.Frame(tabControl)            # Add a second tab
 tabControl.add(tab2, text='Step2')      # Make second tab visible
+tab3 = ttk.Frame(tabControl)            # Add a second tab
+tabControl.add(tab3, text='分析')      # Make second tab visible
+tab4 = ttk.Frame(tabControl)            # Add a second tab
+tabControl.add(tab4, text='推荐')      # Make second tab visible
 
 tabControl.pack(expand=2, fill="both")  # Pack to make visible
 #=========
@@ -112,14 +118,30 @@ def _action_filter():
     try:
         if keyword_include.get() != '':
             for w in keyword_include.get().split(';'):
-                app_ctx.keyword_include.append(w)
+                if not w in app_ctx.keyword_include:
+                    app_ctx.keyword_include.append(w)
+            filtered_comments = []
+            for c in app_ctx.comments:
+                for w in app_ctx.keyword_include:
+                    if w in c['content']:
+                        filtered_comments.append(c)
+                        continue
+            app_ctx.comments = filtered_comments
+
         if keyword_not_include.get() != '':
             for w in keyword_not_include.get().split(';'):
-                app_ctx.keyword_not_include.append(w)
+                if not w in app_ctx.keyword_not_include:
+                    app_ctx.keyword_not_include.append(w)
+            for c in app_ctx.comments:
+                for w in app_ctx.keyword_not_include:
+                    if w in c['content']:
+                        app_ctx.comments.remove(c)
+                        continue
     finally:
         if define.test_mode:
             print('keyword_include', app_ctx.keyword_include)
             print('keyword_not_include', app_ctx.keyword_not_include)
+            print('len(app_ctx.comments)',len(app_ctx.comments))
         pass
 
 # Adding a Button
@@ -144,8 +166,15 @@ scroll.pack(side = tk.RIGHT, fill = tk.Y)
 scroll.config(command = text.yview)
 text.config(yscrollcommand = scroll.set)
 def _action_start_mark():
+    '''
+    如果当前comments中有数据就直接读出来
+    如果当前comments没数据（程序刚运行），则如果有缓存好的
+    数据，就直接读，否则提示用户缓存
+    '''
     text.delete(0.0,tk.END)
-    if(app_ctx.is_crawler_finish is True or os.path.exists(define.comments_path)):
+    if app_ctx.comments is not None:
+        text.insert(tk.INSERT,app_ctx.comments[app_ctx.cur_comment])
+    elif(app_ctx.is_crawler_finish is True or os.path.exists(define.comments_path)):
         app_ctx._load_comments(define.comments_path)
         text.insert(tk.INSERT,app_ctx.comments[app_ctx.cur_comment])
     else:
@@ -184,13 +213,82 @@ action3.grid(column = 2, row = 0)
 action4 = ttk.Button(frame_button_bar, text="喜欢", command=_action_like)
 action4.grid(column = 3, row = 0)
 
+#=========
+#  TAB3
+#=========
+
+# LabelFrame using tab1 as the parent
+frame_result_reader = ttk.LabelFrame(tab3, text='查看分析结果')
+frame_result_reader.grid(column = 0, row = 0)
+# Add text box
+text_result = tk.Text(frame_result_reader,width = 80,height = 32)
+text_result.pack(side = tk.LEFT, fill = tk.Y)
+
+#滚动条
+scroll1 = tk.Scrollbar(frame_result_reader)
+scroll1.pack(side = tk.RIGHT, fill = tk.Y)
+#滚动条与窗体相互绑定
+scroll1.config(command = text_result.yview)
+text_result.config(yscrollcommand = scroll1.set)
+
+frame_result_button_bar = ttk.LabelFrame(tab3)
+frame_result_button_bar.grid(column = 0, row = 1)
+
+def _action_analyse():
+    generate_wordcloud(app_ctx)
+    text_result.delete(0.0,tk.END)
+    result_text = app_ctx.get_word_count_result(100)
+    print(result_text)
+    text_result.insert(tk.INSERT, app_ctx.get_word_count_result(100))
+
+
+action_start_analyse = ttk.Button(frame_result_button_bar, text="开始分析", command=_action_analyse)
+action_start_analyse.pack(side = tk.TOP, fill = tk.Y)
+
+#=========
+#  TAB4
+#=========
+
+
+frame_recommend_reader = ttk.LabelFrame(tab4, text='查看推荐结果')
+frame_recommend_reader.grid(column = 0, row = 0)
+
+text_recommend_result = tk.Text(frame_recommend_reader,width = 80,height = 32)
+text_recommend_result.pack(side = tk.LEFT, fill = tk.Y)
+
+#滚动条
+scroll2 = tk.Scrollbar(frame_recommend_reader)
+scroll2.pack(side = tk.RIGHT, fill = tk.Y)
+#滚动条与窗体相互绑定
+scroll2.config(command = text_recommend_result.yview)
+text_recommend_result.config(yscrollcommand = scroll2.set)
+
+frame_recommend_button_bar = ttk.LabelFrame(tab4)
+frame_recommend_button_bar.grid(column = 0, row = 1)
+
+def _action_get_recommend_result():
+    app_ctx.init()
+    get_similar_doc([1], 10, app_ctx)
+    text_result.delete(0.0,tk.END)
+    text_recommend_result.insert(tk.INSERT, app_ctx.comments[app_ctx.recommend_list[app_ctx.cur_recommend]])
+
+
+button_get_recommend = ttk.Button(frame_recommend_button_bar, text="获取推荐结果", command=_action_get_recommend_result)
+button_get_recommend.grid(column = 0, row = 0)
+
+#增加按键
+button_recommend_previous = ttk.Button(frame_recommend_button_bar, text="上一个", command=_action_previous_comment)
+button_recommend_previous.grid(column = 1, row = 0)
+
+#增加按键
+button_recommend_next = ttk.Button(frame_recommend_button_bar, text="下一个", command=_action_next_comment)
+button_recommend_next.grid(column = 2, row = 0)
 
 # Exit GUI cleanly
 def _quit():
     win.quit()
     win.destroy()
     exit()
-
 
 # Creating a Menu Bar
 menu_bar = Menu(win)
@@ -207,7 +305,6 @@ menu_bar.add_cascade(label="File", menu=file_menu)
 help_menu = Menu(menu_bar, tearoff=0)
 help_menu.add_command(label="About")
 menu_bar.add_cascade(label="Help", menu=help_menu)
-
 
 url_entered.focus()      # Place cursor into name Entry
 # ======================
