@@ -46,8 +46,8 @@ def get_similar_doc(doc_list, n, app_ctx):
     for i, vec in enumerate(app_ctx.doc_vec_list):
         similarity[i] = cosine_similarity(doc_vec_mean, vec)
     similarity = sorted(similarity.items(), key=lambda x : x[1], reverse=True)
+    app_ctx.recommend_list = []
     for i in range(min(n, len(similarity))):
-        app_ctx.recommend_list = []
         app_ctx.recommend_list.append(similarity[i][0])
     return True
     

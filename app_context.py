@@ -23,7 +23,7 @@ class AppCtx(object):
         self.recommend_list = []
         self.like_list = []
         self.keyword_include = []
-        self.keyword_not_include = []
+        self.keyword_exclude = []
     def init(self):
         self._load_model('./data/' + str(define.word_vector_dimension) + '/wiki_model')
         self.stop_word_table = self._build_stop_word_table(define.stop_word_table_path)
