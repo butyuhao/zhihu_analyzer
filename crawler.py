@@ -4,6 +4,7 @@ import json
 import time
 import re
 import datetime
+import define
 import pandas as pd
 import csv
 from tqdm import tqdm
@@ -41,10 +42,8 @@ def parse_data(html):
     '''
     json_data = json.loads(html)['data']
     comments = []
-    
     try:
         for item in json_data:
- 
             comment = {}
             comment['name'] = str(item['author']['name'])    # 姓名
             comment['gender'] = int(item['author']['gender'])  # 性别
@@ -54,9 +53,7 @@ def parse_data(html):
             comment['answer_url'] = str(item['url'])               # 回答链接
             comment['content'] = str(item['content'])           # 回答内容
             comments.append(comment)
-            
         return comments
-    
     except Exception as e:
         print('error' + str(comment))
         print(e)
@@ -67,7 +64,7 @@ def save_data(comments):
     参数：comments 将要保存的数据  
     每一行是一个回答，每一行各自是json格式
     '''
-    filename = './data/comments.txt'
+    filename = define.comments_path
     # filename = 'data/comments.csv'
     with open(filename, 'a') as f:
         for c in comments:

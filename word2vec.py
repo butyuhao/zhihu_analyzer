@@ -54,8 +54,8 @@ def get_similar_doc(doc_list, n, app_ctx):
 def get_doc_vec_list(app_ctx):
     ''' 
     获得当前app_ctx中comments所对应的vector的list
-    因为在word2vec部分有判断词语是否在model中，这边cut_word
-    的时候不需要传入停用词表
+    因为在word2vec部分有判断词语是否在model中，这边
+    cut_word的时候不需要传入停用词表
     '''
     doc_vec_list = []
     for comment in tqdm(app_ctx.comments):

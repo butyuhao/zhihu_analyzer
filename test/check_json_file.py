@@ -9,5 +9,6 @@ from app_context import AppCtx
 app_ctx = AppCtx()
 app_ctx._load_comments(('./data/comments.txt'))
 for c in app_ctx.comments:
-  str = filter_tags(c['content'])
-  print(str)
+  
+  if (c['gender'] == -1):
+    print(c['personal_url'])

@@ -16,6 +16,7 @@ class AppCtx(object):
         self.comments_rich_text_split = None
         self.word_count = None
         self.doc_vec_list = None
+        self.gender_filter = None
         self.crawler_website = ''#zhi_hu dou_ban...
         self.is_crawler_finish = False #是否已经跑过爬虫
         self.cur_comment = 0 #当前在阅读器中正在看的comment编号
@@ -53,10 +54,6 @@ class AppCtx(object):
                 c.strip()
                 comments_list.append(ast.literal_eval(c))
             self.comments = comments_list
-            #print(comments_list)
-            #comments = json.loads(comments['content']) 
-            #使得评论按照点赞从高到低排序
-            #self.comments = sorted(comments, key=lambda x : int(x['vote_up_count']), reverse=True)
     def _load_model(self, file_path):
         self.model = Word2Vec.load(file_path)
     def _get_comments_rich_text(self):

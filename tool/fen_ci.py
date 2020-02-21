@@ -14,11 +14,6 @@ def cut_words(sentence, stop_word_table = None):
         line = [x for x in line if x not in stop_word_table]
     return " ".join(list(line))
 
-def get_file_len(f):
-    for i, l in enumerate(f):
-        pass
-    return i + 1
-
 def filter_tags(html_str):
     re_p=re.compile('<p>',re.I)
     re_slash_p=re.compile('</p>',re.I)
